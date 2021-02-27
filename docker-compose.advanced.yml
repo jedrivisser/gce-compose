@@ -1,0 +1,53 @@
+version: "3"
+services:
+  traefik:
+    image: traefik:v2.3.7
+    command: 
+      - --providers.docker
+      - --providers.docker.exposedByDefault=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entryPoint.to=websecure
+      - --entrypoints.web.http.redirections.entryPoint.scheme=https
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.myresolver.acme.email=acme@jedrivisser.com
+      - --certificatesresolvers.myresolver.acme.storage=acme.json
+      - --certificatesresolvers.myresolver.acme.tlschallenge=true
+
+    ports:
+      - 443:443
+      - 80:80
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  default:
+    image: traefik/whoami
+    environment:
+      - WHOAMI_NAME=My Default Server
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.default.entrypoints=websecure"
+      - "traefik.http.routers.default.rule=Host(`${BASE_URL}`)"
+      - "traefik.http.routers.default.tls=true"
+      - "traefik.http.routers.default.tls.certresolver=myresolver"
+
+  server1:
+    image: traefik/whoami
+    environment:
+      - WHOAMI_NAME=My First Test Server
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.server1.entrypoints=websecure"
+      - "traefik.http.routers.server1.rule=Host(`server1.${BASE_URL}`)"
+      - "traefik.http.routers.server1.tls=true"
+      - "traefik.http.routers.server1.tls.certresolver=myresolver"
+
+  server2:
+    image: traefik/whoami
+    environment:
+      - WHOAMI_NAME=My Seconds Test Server
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.server2.entrypoints=websecure"
+      - "traefik.http.routers.server2.rule=Host(`server2.${BASE_URL}`)"
+      - "traefik.http.routers.server2.tls=true"
+      - "traefik.http.routers.server2.tls.certresolver=myresolver"

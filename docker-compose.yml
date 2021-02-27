@@ -1,0 +1,36 @@
+version: "3"
+services:
+  traefik:
+    image: traefik:v2.3.7
+    command: 
+      - --providers.docker
+      - --providers.docker.exposedByDefault=false
+      - --entrypoints.web.address=:80
+    ports:
+      - 80:80
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  default:
+    image: traefik/whoami
+    environment:
+      - WHOAMI_NAME=My Default Server
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.default.rule=Path(`/{path:.*}`)"
+
+  server1:
+    image: traefik/whoami
+    environment:
+      - WHOAMI_NAME=My First Test Server
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.server1.rule=Path(`/server1{path:.*}`)"
+
+  server2:
+    image: traefik/whoami
+    environment:
+      - WHOAMI_NAME=My Second Test Server
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.server2.rule=Path(`/server2{path:.*}`)"
