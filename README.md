@@ -8,6 +8,8 @@ This projects uses a GCE VM instance to host a docker-compose stack.
 
 GCE allows you to [deploy a container][deploy-container] that it will always keep running.
 
+*Note:* This project uses [traefik][traefik-website] for a reverse proxy to expose multiple services on the same port. The examples I use can be run as is for a proof of concept, but to customize the examples for your own project you will need an understanding of how traefik works and it is not discussed in detail here
+
 ## The Idea
 
 Extend the `docker/compose` image by adding my own `docker-compose.yml` to it. I can then use that to run multiple docker containers masquerading as one docker container.
@@ -25,7 +27,7 @@ docker run --rm -ti \
 
 `docker-compose.yml` runs three http services
 
-It uses `traefik` to route you to each service based on the path you navigate to.
+It uses [traefik][traefik-website] to route you to each service based on the path you navigate to.
 
 To test it locally run:
 
@@ -177,7 +179,9 @@ In my case `https://gcecompose.jedrivisser.com`, `https://server1.gcecompose.jed
 
 There are probably more restrictions that I will add if I think of them / encounter them, but for now:
 
-- The docker-compose file cannot use volume mounts for this usecase
+- The docker-compose file cannot use volume mounts for this use case
+- Only port 80 and 443 can be exposed
 
+[traefik-website]: https://traefik.io/
 [deploy-container]: https://cloud.google.com/compute/docs/containers/deploying-containers
 [create-instance]: https://console.cloud.google.com/compute/instancesAdd
